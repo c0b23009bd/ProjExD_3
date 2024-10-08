@@ -174,7 +174,7 @@ def main():
     beam = None
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
-    #tmr = 0
+    tmr = 0
 
     # スコアクラスのインスタンスを生成
     score_keeper = score()
@@ -217,6 +217,7 @@ def main():
 
         score_keeper.draw(screen)  # スコアを描画     
         pg.display.update()
+        tmr += 1
         clock.tick(50)
 
 
