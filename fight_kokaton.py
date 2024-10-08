@@ -165,6 +165,37 @@ class score:
         self.update()  # スコアを更新
 
 
+class Explosion:
+    """
+    爆発エフェクトを管理するクラス
+    """
+    def __init__(self, bomb_rct: pg.Rect, life: int = 20):
+        """
+        爆発の初期化
+        引数 bomb_rct：爆発位置を決めるための爆弾のRect
+        引数 life：爆発の表示時間（デフォルトは20フレーム）
+        """
+        # 元の爆発画像とフリップしたものを読み込む
+        self.images = [
+            pg.image.load("fig/explosion.gif"),  # オリジナルの爆発画像
+            pg.transform.flip(pg.image.load("fig/explosion.gif"), True, True)  # 上下左右に反転したもの
+        ]
+        self.index = 0  # 現在表示する画像のインデックス
+        self.rct = self.images[0].get_rect(center=bomb_rct.center)  # 爆弾の位置に爆発の中心を設定
+        self.life = life  # 爆発の表示時間
+
+    def update(self, screen: pg.Surface):
+        """
+        爆発を描画する
+        引数 screen：画面Surface
+        """
+        if self.life > 0:
+            screen.blit(self.images[self.index // 10], self.rct)  # 画像を交互に表示
+            self.index = (self.index + 1) % 20  # 画像を交互に切り替え
+            self.life -= 1  # 残り時間を減少
+
+
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -173,6 +204,7 @@ def main():
     bird = Bird((300, 200))
     beams = []  # 複数ビームを格納するリスト
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
+    explosions = []  # 爆発エフェクトのリスト
     clock = pg.time.Clock()
     tmr = 0
     
@@ -209,6 +241,7 @@ def main():
                         bombs[j] = None  # 衝突した爆弾をNoneに
                         bird.change_img(6, screen)
                         score_keeper.increase()  # スコアを1点増加
+                        explosions.append(Explosion(bomb.rct))  # 爆発エフェクトを追加
                         pg.display.update()
             
         # ビームのリストを更新（画面外に出たビームやNoneのビームを削除）
@@ -228,11 +261,17 @@ def main():
         for bomb in bombs:
             bomb.update(screen)
 
+        # 爆発エフェクトの更新・描画
+        explosions = [explosion for explosion in explosions if explosion.life > 0]
+        for explosion in explosions:
+            explosion.update(screen)
+
         # スコアを描画     
         score_keeper.draw(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
 
 
 if __name__ == "__main__":
