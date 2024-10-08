@@ -141,7 +141,7 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
-class Score:
+class score:
     def __init__(self):
         """ スコアを管理し、画面に表示するためのクラス """
         self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)  # 日本語フォント
@@ -172,10 +172,13 @@ def main():
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
     beam = None
-    bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
-    tmr = 0
+    #tmr = 0
+
+    # スコアクラスのインスタンスを生成
+    score_keeper = score()
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -201,6 +204,7 @@ def main():
                 if beam.rct.colliderect(bomb.rct):  # ビームと爆弾が衝突したら
                     beam, bombs[j] = None, None
                     bird.change_img(6, screen)
+                    score_keeper.increase()  # スコアを1点増加
                     pg.display.update()              
         bombs = [bomb for bomb in bombs if bomb is not None]
 
@@ -210,9 +214,11 @@ def main():
             beam.update(screen) 
         for bomb in bombs:
             bomb.update(screen)
+
+        score_keeper.draw(screen)  # スコアを描画     
         pg.display.update()
-        tmr += 1
         clock.tick(50)
+
 
 
 if __name__ == "__main__":
