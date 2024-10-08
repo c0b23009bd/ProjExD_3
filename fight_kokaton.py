@@ -141,6 +141,31 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+class Score:
+    def __init__(self):
+        """ スコアを管理し、画面に表示するためのクラス """
+        self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)  # 日本語フォント
+        self.color = (0, 0, 255)  # 青色
+        self.score = 0  # スコアの初期値
+        self.update()  # 初期スコアのSurfaceを生成
+
+    def update(self):
+        """ スコアを更新し、表示用の文字列Surfaceを生成する """
+        self.img = self.fonto.render(f"スコア: {self.score}", True, self.color)
+        self.rect = self.img.get_rect()
+        self.rect.bottomleft = (100, HEIGHT - 50)  # 画面左下にスコアを表示
+
+    def draw(self, screen: pg.Surface):
+        """ スコアを画面に描画する """
+        screen.blit(self.img, self.rect)
+
+    def increase(self, points: int = 1):
+        """ スコアを指定された点数だけ増やす (デフォルト1点) """
+        self.score += points
+        self.update()  # スコアを更新
+
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
